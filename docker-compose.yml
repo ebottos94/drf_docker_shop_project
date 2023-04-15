@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: shop_postgres
+    image: postgres
+    ports:
+      - '6543:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  backend:
+    build: 
+      context: ./backend
+    depends_on:
+      - postgres
+    ports:
+      - 8000:8000
+    command: ./docker_start.sh
+    volumes:
+      - ./backend:/code
+
+volumes:
+  postgres_data: {}
