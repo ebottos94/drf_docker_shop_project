@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 class Author(models.Model):
@@ -64,6 +65,28 @@ class Edition(models.Model):
     edition_number = models.PositiveIntegerField(_("Edition number"), default=1)
     publication_date = models.DateField(_("Publication date"))
 
+    def clean(self):
+        super(Edition, self).clean()
+        if self.edition_number == 0:
+            raise ValidationError("edition_number can't be 0")
+        last_edition = (
+            Edition.objects.filter(book=self.book).order_by("-edition_number").first()
+        )
+        if last_edition:
+            if self.edition_number != last_edition.edition_number + 1:
+                raise ValidationError(
+                    f"edition_number must be one greater than the current one. Current edition_number is : {last_edition.edition_number}"
+                )
+        else:
+            if self.edition_number != 1:
+                raise ValidationError(
+                    "This is first edition for this book, edition_number must be 1!"
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super(Edition, self).save(*args, **kwargs)
+
     def __str__(self) -> str:
         return f"Book : {self.book}. Edition number : {self.edition_number}"
 
@@ -83,12 +106,16 @@ class Shop(models.Model):
     )
     price = models.FloatField(_("Price"))
 
+    def clean(self) -> None:
+        super(Shop, self).clean()
+        edition = self.book.book_edition.order_by("-edition_number").first()
+        if not edition:
+            raise ValidationError("This book has no editions!")
+        return edition
+
     def save(self, *args, **kwargs):
-        try:
-            e = self.book.book_edition.order_by("-edition_number").first()
-            self.edition = e
-        except:
-            raise Exception("This book has no editions!")
+        edition = self.clean()
+        self.edition = edition
         self.price = round(self.price, 2)
         super(Shop, self).save(*args, **kwargs)
 

@@ -5,60 +5,173 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Author',
+            name="Author",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('first_name', models.CharField(max_length=255, verbose_name='First Name')),
-                ('last_name', models.CharField(max_length=255, verbose_name='Last Name')),
-                ('nationality', models.CharField(choices=[('IT', 'Italian'), ('FR', 'French'), ('GE', 'German'), ('SP', 'Spanish')], max_length=2, verbose_name='Nationality')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(max_length=255, verbose_name="First Name"),
+                ),
+                (
+                    "last_name",
+                    models.CharField(max_length=255, verbose_name="Last Name"),
+                ),
+                (
+                    "nationality",
+                    models.CharField(
+                        choices=[
+                            ("IT", "Italian"),
+                            ("FR", "French"),
+                            ("GE", "German"),
+                            ("SP", "Spanish"),
+                        ],
+                        max_length=2,
+                        verbose_name="Nationality",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Book',
+            name="Book",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255, verbose_name='Title')),
-                ('num_pages', models.PositiveIntegerField(verbose_name='Number of pages')),
-                ('authors', models.ManyToManyField(related_name='book_authors', to='store.author')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255, verbose_name="Title")),
+                (
+                    "num_pages",
+                    models.PositiveIntegerField(verbose_name="Number of pages"),
+                ),
+                (
+                    "authors",
+                    models.ManyToManyField(
+                        related_name="book_authors", to="store.author"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Edition',
+            name="Edition",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('edition_number', models.PositiveIntegerField(default=1, verbose_name='Edition number')),
-                ('publication_date', models.DateField(verbose_name='Publication date')),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='book_edition', to='store.book')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "edition_number",
+                    models.PositiveIntegerField(
+                        default=1, verbose_name="Edition number"
+                    ),
+                ),
+                ("publication_date", models.DateField(verbose_name="Publication date")),
+                (
+                    "book",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="book_edition",
+                        to="store.book",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Genre',
+            name="Genre",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(choices=[('fantasy', 'Fantasy'), ('narrative', 'Narrative'), ('thriller', 'Thriller'), ('crime', 'Crime')], max_length=9, unique=True, verbose_name='Name')),
-                ('forbidden_to_minors', models.BooleanField(default=False, verbose_name='Forbidden to minors')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        choices=[
+                            ("fantasy", "Fantasy"),
+                            ("narrative", "Narrative"),
+                            ("thriller", "Thriller"),
+                            ("crime", "Crime"),
+                        ],
+                        max_length=9,
+                        unique=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "forbidden_to_minors",
+                    models.BooleanField(
+                        default=False, verbose_name="Forbidden to minors"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Shop',
+            name="Shop",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.FloatField(verbose_name='Price')),
-                ('book', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, related_name='shop_book', to='store.book')),
-                ('edition', models.OneToOneField(editable=False, on_delete=django.db.models.deletion.PROTECT, related_name='shop_edition', to='store.edition')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("price", models.FloatField(verbose_name="Price")),
+                (
+                    "book",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="shop_book",
+                        to="store.book",
+                    ),
+                ),
+                (
+                    "edition",
+                    models.OneToOneField(
+                        editable=False,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="shop_edition",
+                        to="store.edition",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='book',
-            name='genre',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='book_genre', to='store.genre'),
+            model_name="book",
+            name="genre",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="book_genre",
+                to="store.genre",
+            ),
         ),
     ]
